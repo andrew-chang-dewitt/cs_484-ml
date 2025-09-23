@@ -11,7 +11,7 @@ keywords:
 meta:
   byline: Andrew Chang-DeWitt
   published: "2025-08-20T00:00-07:00"
-  updated: "2025-08-22T00:00-06:00"
+  updated: "2025-08-27T00:00-06:00"
 ---
 
 what is machine learning? defined as difference between trad & ml programs is:
@@ -93,7 +93,6 @@ these three can be thought of as sub examples of the main two, but they are stil
 types:
 
 - supervised learning:
-
   - experience is a _labeled_ dataset
   - datapoint has label (or target)
   - has _lots_ of information
@@ -102,7 +101,6 @@ types:
   given `x`
 
 - unsupervised learning:
-
   - _un_-labeled
   - clustering, prob. distribution, denoising, etc.
   - has _some_ information
@@ -112,7 +110,6 @@ types:
   gives output
 
 - reinforcement learning:
-
   - exp is interaction w/ an environment
   - has _almost no_ information
 
@@ -270,7 +267,6 @@ $$
 ### resolutions
 
 - for underfitting:
-
   - increase model complexity (train longer/on larger dataset)
   - choose a diff. ml algo
   - combine models to create better outputs (a.k.a. _ensemble methods_)
