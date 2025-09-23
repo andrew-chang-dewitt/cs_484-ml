@@ -7,3 +7,4 @@ description: lecture & study notes
 
 0. [intro](./lec_00-intro/)
 1. [ml fundamentals](./lec_01-fundamentals/)
+2. [decision trees](./lec_02-decision_trees/)
