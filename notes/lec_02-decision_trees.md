@@ -13,8 +13,8 @@ keywords:
   - "illinois tech"
 meta:
   byline: Andrew Chang-DeWitt
-  published: "2025-09-23T00:00-07:00"
-  updated: "2025-08-27T00:00-06:00"
+  published: "2025-08-27T00:00-06:00"
+  updated: "2025-09-23T00:00-06:00"
 ---
 
 > [!ASIDE]
