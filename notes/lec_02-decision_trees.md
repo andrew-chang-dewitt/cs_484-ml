@@ -354,9 +354,10 @@ $$
 - stops at smallest acceptable tree
 - can overfit, can help to _prune_ the found tree sometimes
 
-##### overfitting
+#### overfitting
 
-occurs when data is noisy and because ID3 is _not guaranteed_ to output a small hypothesis even if one exists
+occurs when data is noisy and because ID3 is _not guaranteed_ to output a small
+hypothesis even if one exists
 
 to avoid:
 
@@ -364,3 +365,137 @@ to avoid:
 - acquire more training data
 - remove irrelevant attributes
 - grow full tree, then post-prune
+
+##### reduced error pruning
+
+_**def**_&mdash;when you prune a node by removing the subtree rooted at that
+node (turning the target into a leaf node) & assigning that leaf the most
+common classification of the training examples affileated w/ that node.
+
+requires splitting data into training & validation sets (see [fundamentals
+notes](../lec_01-fundamentals/))
+
+done until further pruning is found to be harmful, by one of the following
+methods:
+
+1. evaluate impac on validation set of pruning each possible node
+2. greedily remove the node that improves the validation set accuracy
+
+##### post-pruning
+
+pruning done _after_ full tree construction via ID3 or other method.
+
+1. infer DT from training set, growing until training data is fit as well as
+   possible & allowing overfitting
+2. convert learned tree into equivalent set of _rules_ by creating one rule for
+   each path from rood node to leaf node
+3. prune each rule by remomving any _preconditions_ that result in improving
+   its accuracy
+
+### extensions to ID3
+
+some algorithms that are largely based on ID3, but make small changes by
+altering steps or adding steps
+
+- using gain ratios (instead of information gain)
+- a version using unique, discrete, _real-valued_ data (quantitative instead of
+  categorical, w/ range restricted to a subset of Real)
+- versions for handling noisy data & overfitting results
+- cross-validation for experimental validation of perf
+- **C4.5:** accounts for unavailable values, continuous attr value ranges,
+  pruning of DT & more
+
+#### continuous-valued attrs
+
+for a _continuous-valued_ attr, `A`, the algo can dynamically create a new
+Boolean attr where $A_c := A < c$
+
+new categories for $A_c$ are generated from _candidate thresholds_ found by
+id-ing the midway point between neighboring examples in sorted values that have
+different target classification
+ex:
+
+temp | 40 | 48 | 60 | 72 | 80 | 90
+play | no | no | yes | yes | yes | no
+
+has 3 ranges:
+
+1. [40,48] -> no
+2. [60,80] -> yes
+3. [90,?] -> no
+
+giving new thresholds
+@ $c_1 = \frac{48 + 60}{2} = 54$ & $c_2 = \frac{80 + 90}{2} = 85$ ;
+which gives us two new attrs, $Temp_{54}$ & $Temp_{85}$
+w/ which we replace $Temp$.
+
+#### gain ratio (C4.5 algo)
+
+why? _information gain_ has bias favoring attrs w/ many values over those w/
+few values.
+
+what? _gain ratio_ penalizes attrs by being sensitive to broadness & uniformity in
+how an attr splits data.
+
+how? processing `Gain(S,A)` as a ratio of a new term: `SplitInfo(S,A)`:
+
+$$
+\begin{aligned}
+\text{SplitInfo}(S,A) &:=
+    - \sum_{v \in \text{values}(A)}
+        \frac{\big|S_v\big|}{\big|S\big|} log_2 \frac{\big|S_v\big|}{\big|S\big|} \\
+\text{GainRatio}(S,A) &:= \frac{\text{Gain}(S,A)}{\text{SplitInfo}(S,A)}
+\end{aligned}
+$$
+
+finally, instead of choosing the attr w/ the highest `Gain`, choose the attr w/
+the highest `GainRatio`
+
+#### gini indix (CART algo)
+
+used in ? algorithm instead of `Gain` of `GainRatio`.
+
+measures prob for random instance from data set that it will be misclassified
+when chosen randomly:
+
+$$
+\text{Gini}(S,A) = 1 - \sum_{i \in Y} p_i^2
+$$
+
+this is calculated for each sub node first, then a weighted avg is taken of all
+sub nodes to calc _gini index_ of an entire node:
+
+$$
+\text{Gini}(S) = \sum_{v \in \text{values}(A)} \frac{\big|S_v\big|}{\big|S\big|} \text{Gini}(S,A)
+$$
+
+finally, the attr w/ the **lowest** gini index is chosen as the decision attr.
+
+## conclusion
+
+summary of DT construction algos:
+
+|                    | ID3          | C4.5            | CART       |
+| ------------------ | ------------ | --------------- | ---------- |
+| splitting cirteria | info. gain   | gain ratio      | gini index |
+| attr type          | categorical  | cat & numerical | cat & num  |
+| missing value      | can't handle | can handle      | can        |
+| pruning ability    | no           | yes             | yes        |
+| outlier detection  | can't handle | can't handle    | can handle |
+
+strengths of DT models:
+
+- fast
+- simple to impl
+- can convert result to set of easily interpretable rules
+- empirically valid in many applications
+- handles noisy data
+
+weaknesses:
+
+- univariate splits/paritioning using only one attr at a time, so limits many
+  possible trees -> complexity of tree is proportional to number of attrs
+- large DTs are hard to understand
+- requires fixed-length feature vectors
+- non-incremental (produced via batch method only, e.g. can't stop learning &
+  resume later)
