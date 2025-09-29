@@ -17,14 +17,16 @@ meta:
   updated: "2025-09-23T00:00-06:00"
 ---
 
-> [!ASIDE]
->
-> ## contents
->
-> - definitions
-> - construction
->   - top-down induction (ID3)
-> - error reduction
+:::aside{.right-aside.after#toc}
+
+## contents
+
+- definitions
+- construction
+  - top-down induction (ID3)
+- error reduction
+
+:::
 
 ## definitions
 
