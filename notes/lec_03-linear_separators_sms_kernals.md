@@ -72,7 +72,7 @@ typically used today, but good for introducing how a linear separator is used.
 english description:
 
 1. start @ $T = 1$ w/ $w_1$ as a _zero vector_
-2. given some example $x$, predict $Positive(y) \iff w_1 x >= 0$
+2. given some example $x$, predict $Positive(y) \iff w_1 \cdot x >= 0$
 3. On a mistake, update vector weights as follows:
    - if should have been positive, then update $w_{t + 1} \gets w_t + x$
    - if should have been negative, then update $w_{t + 1} \gets w_t - x$
@@ -88,11 +88,114 @@ given data:
 
 iterations:
 
-| i   | T   | $w^T$            | $x_i$        | $>= 0 \iff +$ | correct? |
-| --- | --- | ---------------- | ------------ | ------------- | -------- |
-|     | 1   | $[0\space0]^T$   |              |               |          |
-| 1   | 1   | $[0\space0]^T$   | $[1\space2]$ | +             | y        |
-| 2   | 1   | $[0\space0]^T$   | $[2\space3]$ | +             | y        |
-| 3   | 1   | $[0\space0]^T$   | $[2\space1]$ | +             | n        |
-| 3   | 2   | $w^{T-1} - x_i$  |              |               |          |
-| 4   | 2   | $[-2\space-1]^T$ | $[3\space0]$ | -             | y        |
+$$
+\begin{aligned}
+(1) && \because
+       && p(i) &= \Bigg\lbrace\begin{aligned}
+                    +, & \text{ if } w^T \cdot x_i >= 0 \\
+                    -, & \text{ otherwise}
+                  \end{aligned}, &&
+    \textit{$p(i)$ predicts classification of $x_i$} \\
+(2) && && q(i) &= \Bigg\lbrace\begin{aligned}
+                    w^{T - 1} + x_i, & \text{ if } y_i \equiv + \\
+                    w^{T - 1} - x_i, & \text{ if } y_i \equiv - \\
+                  \end{aligned} &&
+    \textit{$q(i)$ gives new $w^T$ value from $x_i$ \& $y_i$} \\
+\\
+    && &&   T &:= 1 \\
+(3) && && w^T &:= \begin{bmatrix} 0 & 0 \end{bmatrix} &&
+    \textit{init $T$ counter \& $w$ vector} \\
+\\
+    && && y_1 &\equiv p(1) &&
+    \textit{check prediction of $x_1$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} 0 & 0 \end{bmatrix} \cdot \begin{bmatrix} 1 & 2 \end{bmatrix} >= 0 &&
+    \textit{\{1,3\}} \\
+    && &&     &\equiv + \iff (0 * 1) + (0 * 2) >= 0 \\
+    && &&     &\equiv + \iff 0 >= 0 \\
+    && &&   + &\equiv + &&
+    \textit{prediction is correct, continue} \\
+\\
+    && && y_2 &\equiv p(2) &&
+    \textit{check prediction of $x_2$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} 0 & 0 \end{bmatrix} \cdot \begin{bmatrix} 2 & 3 \end{bmatrix} >= 0 &&
+    \textit{\{1,3\}} \\
+    && &&     &\equiv + \iff (0 * 2) + (0 * 3) >= 0 \\
+    && &&     &\equiv + \iff 0 >= 0 \\
+    && &&   + &\equiv + &&
+    \textit{prediction is correct, continue} \\
+\\
+    && && y_3 &\equiv p(3) &&
+    \textit{check prediction of $x_3$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} 0 & 0 \end{bmatrix} \cdot \begin{bmatrix} 2 & 1 \end{bmatrix} >= 0 &&
+    \textit{\{1,3\}} \\
+    && &&     &\equiv + \iff (0 * 2) + (0 * 1) >= 0 \\
+    && &&     &\equiv + \iff 0 >= 0 \\
+    && &&   - &\equiv + \implies \bot &&
+    \textit{prediction is incorrect, update $w^T$} \\
+\\
+    && &&   T &:= 2 \\
+    && && w^T &:= q(3) \\
+    && &&     &= \begin{bmatrix} 0 & 0 \end{bmatrix} - \begin{bmatrix} 2 & 1 \end{bmatrix} &&
+    \textit{\{2,3\}} \\
+(4) && && w^T &= \begin{bmatrix} -2 & -1 \end{bmatrix} \\
+\\
+    && && y_4 &\equiv p(4) &&
+    \textit{check prediction of $x_4$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} -2 & -1 \end{bmatrix} \cdot \begin{bmatrix} 3 & 0 \end{bmatrix} >= 0 &&
+    \textit{\{1,4\}} \\
+    && &&     &\equiv + \iff (-2 * 3) + (-1 * 0) >= 0 \\
+    && &&     &\equiv + \iff -6 >= 0 \\
+    && &&   - &\equiv - &&
+    \textit{prediction is correct, go back to $x_1$} \\
+\\
+    && && y_1 &\equiv p(1) &&
+    \textit{check prediction of $x_1$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} -2 & -1 \end{bmatrix} \cdot \begin{bmatrix} 1 & 2 \end{bmatrix} >= 0 &&
+    \textit{\{1,4\}} \\
+    && &&     &\equiv + \iff (-2 * 1) + (-1 * 2) >= 0 \\
+    && &&     &\equiv + \iff -4 >= 0 \\
+    && &&   + &\equiv - \implies \bot &&
+    \textit{prediction is incorrect, update $w^T$} \\
+\\
+    && &&   T &:= 3 \\
+    && && w^T &:= q(1) \\
+    && &&     &= \begin{bmatrix} -2 & -1 \end{bmatrix} + \begin{bmatrix} 1 & 2 \end{bmatrix} &&
+    \textit{\{2,4\}} \\
+(5) && && w^T &= \begin{bmatrix} -1 & 1 \end{bmatrix} \\
+\\
+    && && y_2 &\equiv p(2) &&
+    \textit{check prediction of $x_2$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} -1 & 1 \end{bmatrix} \cdot \begin{bmatrix} 2 & 3 \end{bmatrix} >= 0 &&
+    \textit{\{1\}} \\
+    && &&     &\equiv + \iff (-1 * 2) + (1 * 3) >= 0 \\
+    && &&     &\equiv + \iff 1 >= 0 \\
+    && &&   + &\equiv + &&
+    \textit{prediction is correct, continue} \\
+\\
+    && && y_3 &\equiv p(3) &&
+    \textit{check prediction of $x_3$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} -1 & 1 \end{bmatrix} \cdot \begin{bmatrix} 2 & 1 \end{bmatrix} >= 0 &&
+    \textit{\{1,5\}} \\
+    && &&     &\equiv + \iff (-1 * 2) + (1 * 1) >= 0 \\
+    && &&     &\equiv + \iff -1 >= 0 \\
+    && &&   - &\equiv - &&
+    \textit{prediction is correct, continue} \\
+\\
+    && && y_4 &\equiv p(4) &&
+    \textit{check prediction of $x_4$} \\
+    && &&     &\equiv + \iff \begin{bmatrix} -1 & 1 \end{bmatrix} \cdot \begin{bmatrix} 3 & 0 \end{bmatrix} >= 0 &&
+    \textit{\{1,5\}} \\
+    && &&     &\equiv + \iff (-1 * 3) + (1 * 0) >= 0 \\
+    && &&     &\equiv + \iff -3 >= 0 \\
+    && &&   - &\equiv - &&
+    \textit{prediction is correct, continue} \\
+\\
+    && && p(i) &\text{ correct with } w^3 \space\forall \space x_i \\
+    && \therefore
+       && LinSep &\equiv w^3 \cdot x \\
+    && &&        &\equiv \begin{bmatrix} -1 & 1 \end{bmatrix} \cdot \begin{bmatrix} x & y \end{bmatrix} &&
+    \textit{\{5\} slides use $\begin{bmatrix} x_1 & x_2 \end{bmatrix}$} \\
+    && && LinSep &\equiv -x + y = 0 \\
+    && && LinSep &\equiv y = x \quad\blacksquare \\
+\end{aligned}
+$$
