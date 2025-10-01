@@ -16,7 +16,7 @@
 @import "./print.css";
 @import "./table.css";
 @import "./code.css";
-@import "./katex.min.css";
+@import "../../node_modules/katex/dist/katex.css";
 @import "./math.css";
 @import "./alerts.css";
 
